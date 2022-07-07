@@ -132,7 +132,7 @@ class BaseTimetableMixin(i18nMixin, NodeLoggingMixin):
                                incremental)
 
 
-class BaseTimetableGuiMixin(FontsGuiMixin, BaseTimetableMixin, BaseGuiMixin):
+class BaseTimetableGuiMixin(BaseTimetableMixin, FontsGuiMixin, BaseGuiMixin):
     def __init__(self, *args, **kwargs):
         self._timetable_palette = None
         self._timetable_gui = None
