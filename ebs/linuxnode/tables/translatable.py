@@ -9,10 +9,14 @@ class TranslatableTableSpec(BasicTableSpec):
         self._languages = kwargs.pop('languages', [])
         self._next_language = -1
         self._metadata = kwargs.pop('i18n_metadata', {})
+        self._catalog_dir = kwargs.pop('i18n_catalog_dir', None)
         super(TranslatableTableSpec, self).__init__(*args, **kwargs)
 
     def install_metadata(self, metadata):
         self._metadata.update(metadata)
+
+    def install_catalog_dir(self, catalog_dir):
+        self._catalog_dir = catalog_dir
 
     def install(self):
         super(TranslatableTableSpec, self).install()
@@ -39,7 +43,9 @@ class TranslatableTableSpec(BasicTableSpec):
     def i18n_install_language(self, language):
         if language not in self._languages:
             self._languages.append(language)
-        self.parent.node.i18n.install_context(self.name, language, metadata=self.i18n_metadata)
+        self.parent.node.i18n.install_context(self.name, language,
+                                              catalog_dir=self._catalog_dir,
+                                              metadata=self.i18n_metadata)
 
     @property
     def languages(self):

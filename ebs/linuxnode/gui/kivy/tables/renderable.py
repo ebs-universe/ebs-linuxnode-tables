@@ -83,9 +83,6 @@ class BasicRenderableTable(TableClass):
     def palette(self, value):
         self._palette = value
 
-    def preprocess(self, value, spec=None):
-        return str(value)
-
     @property
     def gui_table_container(self):
         if not self._gui_table_container:

@@ -48,6 +48,9 @@ class BasicTable(object):
     def spec(self) -> BasicTableSpec:
         return self._spec
 
+    def preprocess(self, value, spec=None):
+        return str(value)
+
     def update(self, entries, incremental=False):
         if incremental:
             raise NotImplementedError
