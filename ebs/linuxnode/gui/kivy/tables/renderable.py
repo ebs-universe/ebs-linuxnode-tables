@@ -9,6 +9,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from ebs.linuxnode.tables.basic import BasicTableEntry
 from kivy_garden.ebs.core.colors import ColorBoxLayout
 from kivy_garden.ebs.core.image import BleedImage
+from kivy_garden.ebs.core.labels import ColorLabel
 from kivy_garden.ebs.core.labels import SelfScalingColorLabel
 
 try:
@@ -41,20 +42,36 @@ class BasicRenderableTableEntry(BasicTableEntry):
                 'bold': colspec.font_bold
             })
             kwargs = dict(
-                text=self.parent.preprocess(getattr(self, colspec.accessor), colspec),
                 bgcolor=palette.cell_background,
-                color=palette.cell_foreground,
                 size_hint=(colspec.width_hint, None),
                 height=self.parent.spec.row_height,
-                valign='middle', halign=colspec.halign,
-                padding_x=15, width=colspec.width,
-                markup=colspec.markup,
-                **l_font_params
+                width=colspec.width,
             )
-            label = SelfScalingColorLabel(
-                **{k: v for k, v in kwargs.items() if v is not None}
-            )
-            label.bind(size=label.setter('text_size'))
+
+            content = self.parent.preprocess(getattr(self, colspec.accessor), colspec)
+            if content:
+                kwargs.update(dict(
+                    text=content, markup=colspec.markup,
+                    valign='middle', halign=colspec.halign,
+                    padding_x=15, color=palette.cell_foreground,
+                    **l_font_params
+                ))
+
+                if colspec.dynamic_scaling:
+                    label = SelfScalingColorLabel(
+                        **{k: v for k, v in kwargs.items() if v is not None}
+                    )
+                else:
+                    label = ColorLabel(
+                        **{k: v for k, v in kwargs.items() if v is not None}
+                    )
+
+                label.bind(size=label.setter('text_size'))
+            else:
+                label = ColorBoxLayout(
+                    **{k: v for k, v in kwargs.items() if v is not None}
+                )
+
             _gui_entry.add_widget(label)
 
         _gui_entry.add_widget(BoxLayout(size_hint=(None, None), width=20,

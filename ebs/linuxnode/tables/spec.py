@@ -40,7 +40,8 @@ class BasicTablePalette(object):
 
 class BasicColumnSpec(object):
     def __init__(self, title, accessor, halign=None, font_bold=None,
-                 width=None, width_hint=None, markup=False, i18n=True):
+                 width=None, width_hint=None, dynamic_scaling=True,
+                 markup=False, i18n=True):
         self._parent = None
         self._title = title
         self._accessor = accessor
@@ -48,6 +49,7 @@ class BasicColumnSpec(object):
         self._font_bold = font_bold
         self._width = width
         self._width_hint = width_hint
+        self._dynamic_scaling = dynamic_scaling
         self._markup = markup
         self._i18n = i18n
 
@@ -86,6 +88,10 @@ class BasicColumnSpec(object):
         if self._width:
             return None
         return self._width_hint or 1
+
+    @property
+    def dynamic_scaling(self):
+        return self._dynamic_scaling
 
     @property
     def markup(self):
