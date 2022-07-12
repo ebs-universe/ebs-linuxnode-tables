@@ -90,6 +90,7 @@ class BasicRenderableTable(TableClass):
         self._fallback_image = None
         self._gui_fallback = None
         self._palette = None
+        self._total_pages = None
         super(BasicRenderableTable, self).__init__(node, spec)
 
     @property
@@ -199,7 +200,7 @@ class BasicRenderableTable(TableClass):
                 self._gui_table_container.add_widget(self._gui_table)
 
     def build(self, entries):
-        if self.fallback_image:
+        if self.fallback_image and not self._gui_fallback:
             self._gui_fallback = BleedImage(
                 source=self.fallback_image,
                 allow_stretch=True,

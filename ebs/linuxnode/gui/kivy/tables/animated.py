@@ -184,7 +184,7 @@ class AnimatedTable(BasicRenderableTable):
             self._animation_lock = False
             self._attach_entries(self._current_entries)
             self._destroy_dangling_entities()
-            gc.collect()
+            # gc.collect()
 
         self._current_entries = new_entries
 

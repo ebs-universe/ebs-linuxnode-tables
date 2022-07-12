@@ -1,6 +1,7 @@
 
 
 import arrow
+from cached_property import cached_property_with_ttl
 from twisted import logger
 from twisted.internet.task import deferLater
 from twisted.internet.defer import CancelledError
@@ -70,7 +71,7 @@ class Timetable(AnimatedTable):
     def build(self, entries):
         return super(Timetable, self).build(entries=entries)
 
-    @property
+    @cached_property_with_ttl(ttl=5)
     def active_entries(self):
         return [x for x in sorted(self._entries, key=lambda y: y.ts_start)
                 if x.ts_start.shift(minutes=-1 * self.post_window) < arrow.now() < x.ts_end.shift(minutes=self.prior_window)]
@@ -81,17 +82,19 @@ class Timetable(AnimatedTable):
         self.step()
 
     def _turn_page(self):
-        self._current_page += 1
-        if self._current_page >= self.total_pages:
+        self._current_page = self._current_page + 1
+        tp = self.total_pages
+        self.log.debug("Turning to page {0} of {1}".format(self._current_page, tp))
+        if self._current_page >= tp:
             self.next_language()
             self.log.debug("Switched to Next Language : {}".format(self._i18n_language))
             self._current_page = 0
 
     def step(self):
-        self.log.debug("Drawing page {0} / {1}".format(self._current_page + 1, self.total_pages))
         self._turn_page()
+        deferLater(self._node.reactor, 0.0, lambda: None)
         self.redraw_entries(entries=self.page_entities(self._current_page))
-
+        deferLater(self._node.reactor, 0.0, lambda: None)
         duration = self._period_page
         self._redraw_task = deferLater(self._node.reactor, duration, self.step)
 
